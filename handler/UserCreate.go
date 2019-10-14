@@ -28,7 +28,5 @@ func UserCreate(w http.ResponseWriter, r *http.Request) {
 	if user.Id == 0 {
 
 	}
-	if user.Balance == 0.0 {
 
-	}
 }
