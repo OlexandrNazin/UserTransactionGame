@@ -17,6 +17,7 @@ func UserCreate(w http.ResponseWriter, r *http.Request) {
 	newDecoder := json.NewDecoder(r.Body)
 	err := newDecoder.Decode(&user)
 	if err != nil {
+		logger.ResWriter(w, "error: fail")
 		logger.Logger(err)
 		return
 	}
