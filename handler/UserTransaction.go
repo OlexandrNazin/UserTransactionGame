@@ -2,40 +2,64 @@ package handler
 
 import (
 	"UserTransactionGame/logger"
+	"UserTransactionGame/memory"
 	"encoding/json"
+	"log"
 	"net/http"
 )
 
 type UserTransactionStruct struct {
 	UserId        uint
-	TrancactionId uint
-	Bet           string
+	TransactionId uint
+	Type          string
 	Amount        float64
 	Token         string
 }
 
 func UserTransaction(w http.ResponseWriter, r *http.Request) {
-	var user UserTransactionStruct
+	var Transaction UserTransactionStruct
 	newDecoder := json.NewDecoder(r.Body)
-	err := newDecoder.Decode(&user)
+	err := newDecoder.Decode(&Transaction)
 	if err != nil {
 		logger.ResWriter(w, map[string]interface{}{"error": "fail"})
 		logger.Logger(err)
 		return
 	}
-	if user.Token == "" {
+	log.Printf("%+q", Transaction)
+	if Transaction.Token == "" {
+		logger.ResWriter(w, map[string]interface{}{"error": "invalid transaction token"})
+	}
+	if Transaction.Amount == 0.0 {
+		logger.ResWriter(w, map[string]interface{}{"error": "invalid transaction amount"})
+	}
+	if Transaction.UserId == 0 {
+		logger.ResWriter(w, map[string]interface{}{"error": "invalid transaction user id"})
 
 	}
-	if user.Amount == 0.0 {
-
+	if Transaction.TransactionId == 0 {
+		logger.ResWriter(w, map[string]interface{}{"error": "invalid transaction id"})
 	}
-	if user.UserId == 0 {
-
+	if Transaction.Type != "Bet" && Transaction.Type != "Win" {
+		logger.ResWriter(w, map[string]interface{}{"error": "invalid type transaction"})
+		return
 	}
-	if user.TrancactionId == 0 {
-
+	user, err := memory.Memory.GetUser(Transaction.UserId)
+	if err != nil {
+		logger.ResWriter(w, map[string]interface{}{"error": err.Error()})
+		return
 	}
-	if user.Bet == "" {
-
+	if Transaction.Type == "Bet" && Transaction.Amount > user.Balance {
+		logger.ResWriter(w, map[string]interface{}{"error": "not enough funds on the balance sheet"})
+		return
 	}
+	if Transaction.Type == "Bet" {
+		user.Balance -= Transaction.Amount
+		memory.Memory.UpdateTransactBet(user.Id, Transaction.Amount)
+	}
+	if Transaction.Type == "Win" {
+		user.Balance += Transaction.Amount
+		memory.Memory.UpdateTransactWin(user.Id, Transaction.Amount)
+	}
+	memory.Memory.ModUser(user)
+	logger.ResWriter(w, map[string]interface{}{"error": "", "balance": user.Balance})
 }

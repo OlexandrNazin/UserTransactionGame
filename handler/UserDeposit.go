@@ -4,6 +4,7 @@ import (
 	"UserTransactionGame/logger"
 	"UserTransactionGame/memory"
 	"encoding/json"
+	"log"
 	"net/http"
 	"time"
 )
@@ -22,6 +23,7 @@ func UserDeposit(w http.ResponseWriter, r *http.Request) {
 	var userDeposit UserDepositStruct
 	newDecoder := json.NewDecoder(r.Body)
 	err := newDecoder.Decode(&userDeposit)
+	log.Println(userDeposit)
 	if err != nil {
 		logger.ResWriter(w, map[string]interface{}{"error": "fail"})
 		logger.Logger(err)
