@@ -5,7 +5,6 @@ import (
 	"UserTransactionGame/memory"
 	"UserTransactionGame/model"
 	"encoding/json"
-	"log"
 	"net/http"
 )
 
@@ -19,7 +18,6 @@ func UserCreate(w http.ResponseWriter, r *http.Request) {
 	var user UserCreateStruct
 	newDecoder := json.NewDecoder(r.Body)
 	err := newDecoder.Decode(&user)
-	log.Println(user)
 	if err != nil {
 		logger.ResWriter(w, map[string]interface{}{"error": "fail"})
 		logger.Logger(err)

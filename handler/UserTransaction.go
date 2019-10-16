@@ -4,7 +4,6 @@ import (
 	"UserTransactionGame/logger"
 	"UserTransactionGame/memory"
 	"encoding/json"
-	"log"
 	"net/http"
 )
 
@@ -25,7 +24,6 @@ func UserTransaction(w http.ResponseWriter, r *http.Request) {
 		logger.Logger(err)
 		return
 	}
-	log.Printf("%+q", Transaction)
 	if Transaction.Token == "" {
 		logger.ResWriter(w, map[string]interface{}{"error": "invalid transaction token"})
 	}

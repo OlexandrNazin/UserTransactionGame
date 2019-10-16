@@ -51,7 +51,6 @@ func (mem *memCache) GetUser(Id uint) (*model.UserCreate, error) {
 func (mem *memCache) GetUserInfo(id uint) *model.GlobalInfo {
 	mem.mu.Lock()
 	defer mem.mu.Unlock()
-	log.Println(id)
 	_, err := mem.itemGlobalInfo[id]
 	if err != true {
 		mem.itemGlobalInfo[id] = &model.GlobalInfo{
@@ -86,8 +85,8 @@ func (mem memCache) UpdateTransactBet(id uint, sum float64) {
 		mem.itemGlobalInfo[id] = &model.GlobalInfo{}
 	}
 	info := mem.itemGlobalInfo[id]
-	info.DepositCount++
-	info.DepositSum += sum
+	info.BetCount++
+	info.BetSum += sum
 
 }
 func (mem memCache) UpdateTransactWin(id uint, sum float64) {
@@ -98,8 +97,8 @@ func (mem memCache) UpdateTransactWin(id uint, sum float64) {
 		mem.itemGlobalInfo[id] = &model.GlobalInfo{}
 	}
 	info := mem.itemGlobalInfo[id]
-	info.DepositCount++
-	info.DepositSum += sum
+	info.WinCount++
+	info.WinSum += sum
 }
 
 func (mem *memCache) ModUser(user *model.UserCreate) {

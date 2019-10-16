@@ -4,7 +4,6 @@ import (
 	"UserTransactionGame/logger"
 	"UserTransactionGame/memory"
 	"encoding/json"
-	"log"
 	"net/http"
 )
 
@@ -22,7 +21,6 @@ func UserGet(w http.ResponseWriter, r *http.Request) {
 		logger.Logger(err)
 		return
 	}
-	log.Println(user)
 
 	if user.Token == "" {
 		logger.ResWriter(w, map[string]interface{}{"error": "failToken"})

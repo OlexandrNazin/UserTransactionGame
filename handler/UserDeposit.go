@@ -4,7 +4,6 @@ import (
 	"UserTransactionGame/logger"
 	"UserTransactionGame/memory"
 	"encoding/json"
-	"log"
 	"net/http"
 	"time"
 )
@@ -23,7 +22,6 @@ func UserDeposit(w http.ResponseWriter, r *http.Request) {
 	var userDeposit UserDepositStruct
 	newDecoder := json.NewDecoder(r.Body)
 	err := newDecoder.Decode(&userDeposit)
-	log.Println(userDeposit)
 	if err != nil {
 		logger.ResWriter(w, map[string]interface{}{"error": "fail"})
 		logger.Logger(err)
@@ -41,14 +39,16 @@ func UserDeposit(w http.ResponseWriter, r *http.Request) {
 	if userDeposit.DepositId == 0 {
 		logger.ResWriter(w, map[string]interface{}{"error": "Invalid deposit"})
 	}
-	deposit, err := memory.Memory.GetUser(userDeposit.UserId)
+	user, err := memory.Memory.GetUser(userDeposit.UserId)
 	if err != nil {
 		logger.ResWriter(w, map[string]interface{}{"error": err.Error()})
 		return
 	}
 	userDeposit.CreatedTime = time.Now()
-	userDeposit.BalanceBefore = deposit.Balance
-	userDeposit.BalanceAfter = deposit.Balance + userDeposit.Amount
-	deposit.Balance += userDeposit.Amount
+	userDeposit.BalanceBefore = user.Balance
+	userDeposit.BalanceAfter = user.Balance + userDeposit.Amount
+	user.Balance += userDeposit.Amount
+	memory.Memory.ModUser(user)
+	memory.Memory.UpdateDeposit(user.Id, userDeposit.Amount)
 
 }
