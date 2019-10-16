@@ -5,8 +5,8 @@ import (
 	"net/http"
 )
 
-func ResWriter(w http.ResponseWriter, str string) {
-	resp, _ := json.Marshal(str)
+func ResWriter(w http.ResponseWriter, data map[string]interface{}) {
+	resp, _ := json.Marshal(data)
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(resp)
+	_, _ = w.Write(resp)
 }

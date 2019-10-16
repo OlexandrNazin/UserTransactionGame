@@ -2,6 +2,7 @@ package handler
 
 import (
 	"UserTransactionGame/logger"
+	"UserTransactionGame/memory"
 	"encoding/json"
 	"net/http"
 	"time"
@@ -13,29 +14,39 @@ type UserDepositStruct struct {
 	Amount        float64
 	BalanceBefore float64
 	BalanceAfter  float64
-	CreatedAt     time.Time
+	CreatedTime   time.Time
 	Token         string
 }
 
 func UserDeposit(w http.ResponseWriter, r *http.Request) {
-	var user UserDepositStruct
+	var userDeposit UserDepositStruct
 	newDecoder := json.NewDecoder(r.Body)
-	err := newDecoder.Decode(&user)
+	err := newDecoder.Decode(&userDeposit)
 	if err != nil {
-		logger.ResWriter(w, "error: fail")
+		logger.ResWriter(w, map[string]interface{}{"error": "fail"})
 		logger.Logger(err)
 		return
 	}
-	if user.Token == "" {
+	if userDeposit.Token == "" {
+		logger.ResWriter(w, map[string]interface{}{"error": "Invalid token"})
+	}
+	if userDeposit.Amount == 0.0 {
+		logger.ResWriter(w, map[string]interface{}{"error": "Invalid amount"})
+	}
+	if userDeposit.UserId == 0 {
 
 	}
-	if user.Amount == 0.0 {
-
+	if userDeposit.DepositId == 0 {
+		logger.ResWriter(w, map[string]interface{}{"error": "Invalid deposit"})
 	}
-	if user.UserId == 0 {
-
+	deposit, err := memory.Memory.GetUser(userDeposit.UserId)
+	if err != nil {
+		logger.ResWriter(w, map[string]interface{}{"error": err.Error()})
+		return
 	}
-	if user.DepositId == 0 {
+	userDeposit.CreatedTime = time.Now()
+	userDeposit.BalanceBefore = deposit.Balance
+	userDeposit.BalanceAfter = deposit.Balance + userDeposit.Amount
+	deposit.Balance += userDeposit.Amount
 
-	}
 }

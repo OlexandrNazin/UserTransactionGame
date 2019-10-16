@@ -1,7 +1,9 @@
 package logger
 
 import (
+	"errors"
 	"fmt"
+	"log"
 	"runtime"
 	"strings"
 )
@@ -13,4 +15,8 @@ func Logger(err error, args ...interface{}) string {
 	fname := fnames[len(fnames)-1]
 	fmtMsg := fmt.Sprintf("%s(%d)[%s]: %s - %s", sourceFileName, sourceFileLineNum, fname, err, args)
 	return fmtMsg
+}
+func WriteErr(error string) error {
+	log.Println(error)
+	return errors.New(error)
 }
